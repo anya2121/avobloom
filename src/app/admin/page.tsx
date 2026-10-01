@@ -9,11 +9,13 @@ import OrdersTab from "@/components/admin/OrdersTab";
 import ProductsTab from "@/components/admin/ProductsTab";
 import ShippingTab from "@/components/admin/ShippingTab";
 import SettingsTab from "@/components/admin/SettingsTab";
+import FeedbackTab from "@/components/admin/FeedbackTab";
 
-type Tab = "pesanan" | "produk" | "ongkir" | "pengaturan";
+type Tab = "pesanan" | "produk" | "ulasan" | "ongkir" | "pengaturan";
 const TABS: { id: Tab; label: string }[] = [
   { id: "pesanan", label: "📦 Pesanan" },
   { id: "produk", label: "🛍️ Produk" },
+  { id: "ulasan", label: "💬 Ulasan" },
   { id: "ongkir", label: "🚚 Ongkir" },
   { id: "pengaturan", label: "⚙️ Pengaturan" },
 ];
@@ -109,6 +111,7 @@ export default function AdminPage() {
           <div className="win-body">
             {tab === "pesanan" && <OrdersTab />}
             {tab === "produk" && <ProductsTab />}
+            {tab === "ulasan" && <FeedbackTab />}
             {tab === "ongkir" && <ShippingTab />}
             {tab === "pengaturan" && <SettingsTab />}
           </div>

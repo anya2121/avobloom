@@ -108,6 +108,7 @@ function OrderCard({ o, onChanged }: { o: Order; onChanged: () => void }) {
   const templates: Record<string, string> = {
     paid: `Halo ${o.buyer_name}! 🌸 Pembayaran pesanan ${o.code} sebesar ${rupiah(o.total)} sudah kami terima. Pesanan segera dikemas ya. Makasih banyak udah belanja di ${s.store_name} 🥑\n\nCek status: ${pageUrl}`,
     shipped: `Halo ${o.buyer_name}! 📦 Pesanan ${o.code} sudah dikirim pakai ${courier || "kurir"}, nomor resi: ${resi || "-"}.\n\nCek status: ${pageUrl}\n\nSemoga suka ya! 🥑🌸`,
+    review: `Halo ${o.buyer_name}! 🥑 Pesanan ${o.code} sudah sampai dengan aman? Kalau berkenan, boleh minta ulasannya ya di sini: ${pageUrl}\n\nMakasih banyak udah belanja di ${s.store_name} 🌸`,
     remind: `Halo ${o.buyer_name}! 🌸 Pesanan ${o.code} (total ${rupiah(o.total)}) masih menunggu pembayaran ya. Link QRIS-nya di sini: ${pageUrl}\n\nKalau nggak jadi, kabarin aja biar barangnya bisa dilepas ke yang lain 🥑`,
   };
 
@@ -174,6 +175,9 @@ function OrderCard({ o, onChanged }: { o: Order; onChanged: () => void }) {
             )}
             {(o.status === "dikirim" || resi) && (
               <a className="btn sm wa" target="_blank" rel="noreferrer" href={waLink(o.buyer_phone, templates.shipped)}>💬 kirim resi</a>
+            )}
+            {(o.status === "dikirim" || o.status === "selesai") && (
+              <a className="btn sm wa" target="_blank" rel="noreferrer" href={waLink(o.buyer_phone, templates.review)}>💬 minta ulasan</a>
             )}
             <a className="btn sm white" target="_blank" rel="noreferrer" href={waLink(o.buyer_phone, `Halo ${o.buyer_name}! `)}>chat</a>
           </div>

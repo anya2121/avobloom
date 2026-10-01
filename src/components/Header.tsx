@@ -40,6 +40,9 @@ export default function Header() {
             <Link href="/#katalog">
               <span className="ico">🛍️</span>katalog
             </Link>
+            <Link href="/#ulasan">
+              <span className="ico">💌</span>ulasan
+            </Link>
             <Link href="/#cara-beli">
               <span className="ico">📖</span>cara beli
             </Link>

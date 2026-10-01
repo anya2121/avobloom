@@ -64,6 +64,18 @@ export type Order = {
   courier: string | null;
   tracking_number: string | null;
   created_at: string;
+  has_feedback?: boolean;
+};
+
+export type Feedback = {
+  id: string;
+  order_code: string;
+  display_name: string;
+  rating: number;
+  comment: string;
+  items: string | null;
+  is_published: boolean;
+  created_at: string;
 };
 
 export type Buyer = {

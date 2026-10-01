@@ -310,6 +310,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .card-info .btn { margin-top: auto; }
 .empty { padding: 40px 10px; text-align: center; color: var(--ink-soft); }
 
+/* ---------- reviews ---------- */
+.stars { color: #e6d8e0; letter-spacing: 1px; line-height: 1; -webkit-text-stroke: .6px var(--line); }
+.stars .on { color: #ffc94d; }
+.star-input { display: flex; align-items: center; margin: 10px 0 12px; }
+.star-input button {
+  background: none; border: 0; padding: 0 2px; cursor: pointer; font-size: 32px; line-height: 1;
+  color: #eadde5; -webkit-text-stroke: 1.2px var(--line); transition: transform .1s;
+}
+.star-input button.on { color: #ffc94d; }
+.star-input button:hover { transform: scale(1.15) rotate(-6deg); }
+.reviews { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 12px; }
+.reviews > * { min-width: 0; }
+.review {
+  margin: 0; padding: 14px; background: #fff; border: 2px solid var(--line); box-shadow: var(--shadow);
+  border-radius: var(--radius); position: relative;
+}
+.review:nth-child(3n+1) { background: var(--pink-soft); }
+.review:nth-child(3n+2) { background: var(--butter); }
+.review:nth-child(3n) { background: var(--avo-soft); }
+.review blockquote { margin: 8px 0; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review figcaption { font-size: 12px; }
+
 /* ---------- how to ---------- */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .step-num {

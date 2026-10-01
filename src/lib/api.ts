@@ -1,5 +1,5 @@
 import { isDemo, supabase } from "./supabase";
-import type { Buyer, Order, Product, Settings, Zone } from "./types";
+import type { Buyer, Feedback, Order, Product, Settings, Zone } from "./types";
 import { shippingCost } from "./format";
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -153,4 +153,38 @@ export async function getOrder(code: string): Promise<Order | null> {
   const { data, error } = await supabase().rpc("get_order", { p_code: code });
   if (error) throw new Error(error.message);
   return (data as Order) || null;
+}
+
+// ---------- ulasan ----------
+const DEMO_FEEDBACK: Feedback[] = [
+  { id: "f1", order_code: "AVB-DEMO1", display_name: "Nadia", rating: 5, comment: "Bajunya sesuai foto, wangi dan packing-nya rapi banget. Makasih kak! 💕", items: "Cardigan rajut lilac", is_published: true, created_at: now },
+  { id: "f2", order_code: "AVB-DEMO2", display_name: "Salsa", rating: 5, comment: "Fast respon, barang dikirim besoknya. Serumnya masih banyak!", items: "Niacinamide serum 30ml", is_published: true, created_at: now },
+  { id: "f3", order_code: "AVB-DEMO3", display_name: "Rara", rating: 4, comment: "Tasnya mulus kayak baru, cuma pengiriman agak lama karena kurirnya.", items: "Mini shoulder bag pink", is_published: true, created_at: now },
+];
+
+export async function fetchFeedback(): Promise<Feedback[]> {
+  if (isDemo) return DEMO_FEEDBACK;
+  const { data, error } = await supabase()
+    .from("feedback")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return data as Feedback[];
+}
+
+export async function submitFeedback(code: string, rating: number, comment: string, name: string) {
+  if (isDemo) {
+    const raw = sessionStorage.getItem("demo-order:" + code);
+    if (raw) sessionStorage.setItem("demo-order:" + code, JSON.stringify({ ...JSON.parse(raw), has_feedback: true }));
+    return;
+  }
+  const { error } = await supabase().rpc("submit_feedback", {
+    p_code: code,
+    p_rating: rating,
+    p_comment: comment,
+    p_name: name,
+  });
+  if (error) throw new Error(error.message);
 }

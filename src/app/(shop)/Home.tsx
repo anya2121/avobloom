@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Win from "@/components/Win";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/ProductModal";
+import Testimonials from "@/components/Testimonials";
 import { Disc, Flower, Heart, Sparkle, Star } from "@/components/Deco";
 import { fetchProducts } from "@/lib/api";
 import { isDemo } from "@/lib/supabase";
@@ -105,7 +106,7 @@ export default function Home() {
             <span className="green">bloom</span> twice
           </h1>
           <p className="hero-sub">
-            Barang, skincare &amp; pakaian preloved pilihan yang masih cakep, harga jauh lebih ramah. Bayar pakai QRIS, ongkir langsung kehitung.
+            Barang, skincare &amp; pakaian preloved pilihan — masih cakep, harga jauh lebih ramah. Bayar pakai QRIS, ongkir langsung kehitung.
           </p>
           <div className="hero-cta">
             <a href="#katalog" className="btn">belanja sekarang →</a>
@@ -193,6 +194,9 @@ export default function Home() {
           ))}
         </div>
       </Win>
+
+      {/* ---------- ULASAN ---------- */}
+      <Testimonials />
 
       {/* ---------- CARA BELI ---------- */}
       <Win id="cara-beli" title="cara_beli.txt" icon="📖" tone="green" style={{ scrollMarginTop: 16, marginBottom: 32 }}>

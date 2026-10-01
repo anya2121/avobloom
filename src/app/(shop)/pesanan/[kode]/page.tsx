@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Win from "@/components/Win";
+import FeedbackForm from "@/components/FeedbackForm";
 import { getOrder } from "@/lib/api";
 import { formatDate, orderMessage, rupiah, waLink } from "@/lib/format";
 import { STATUS_LABEL, type Order, type OrderStatus } from "@/lib/types";
@@ -18,6 +19,7 @@ export default function OrderPage() {
   const [o, setO] = useState<Order | null | undefined>(undefined);
   const [err, setErr] = useState("");
   const [copied, setCopied] = useState(false);
+  const [fbDone, setFbDone] = useState(false);
 
   useEffect(() => {
     getOrder(code).then(setO).catch((e) => setErr(e.message));
@@ -158,6 +160,18 @@ export default function OrderPage() {
               </div>
             </Win>
           )}
+          {(o.status === "dikirim" || o.status === "selesai") &&
+            (o.has_feedback || fbDone ? (
+              <Win title="ulasan.exe" icon="💌" tone="green" style={{ marginTop: 16 }}>
+                <div className="center">
+                  <div style={{ fontSize: 40 }}>🥰</div>
+                  <b>Makasih udah kasih ulasan!</b>
+                  <p className="small muted" style={{ marginBottom: 0 }}>Ulasanmu bakal tampil di web setelah dicek admin.</p>
+                </div>
+              </Win>
+            ) : (
+              <FeedbackForm code={o.code} defaultName={o.buyer_name.split(" ")[0]} onDone={() => setFbDone(true)} />
+            ))}
         </div>
       </div>
     </div>

@@ -105,7 +105,7 @@ export default function Home() {
             <span className="green">bloom</span> twice
           </h1>
           <p className="hero-sub">
-            Barang, skincare &amp; pakaian preloved pilihan — masih cakep, harga jauh lebih ramah. Bayar pakai QRIS, ongkir langsung kehitung.
+            Barang, skincare &amp; pakaian preloved pilihan yang masih cakep, harga jauh lebih ramah. Bayar pakai QRIS, ongkir langsung kehitung.
           </p>
           <div className="hero-cta">
             <a href="#katalog" className="btn">belanja sekarang →</a>

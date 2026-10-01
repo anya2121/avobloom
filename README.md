@@ -88,3 +88,4 @@ npm install
 cp .env.example .env.local   # lalu isi
 npm run dev                  # buka http://localhost:3000
 ```
+

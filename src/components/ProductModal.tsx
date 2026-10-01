@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
 import { rupiah, waLink } from "@/lib/format";
 import { useCart } from "@/lib/cart";
@@ -10,15 +10,22 @@ import { CATEGORY_EMOJI } from "./Deco";
 
 export default function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
   const [idx, setIdx] = useState(0);
+  const [zoom, setZoom] = useState(false);
   const { add, items } = useCart();
   const s = useSettings();
   const sold = p.stock <= 0;
   const inCart = items.find((i) => i.id === p.id)?.qty || 0;
   const n = p.images.length;
 
+  const zoomRef = useRef(false);
+  zoomRef.current = zoom;
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (zoomRef.current) setZoom(false);
+        else onClose();
+      }
       if (e.key === "ArrowRight" && n > 1) setIdx((i) => (i + 1) % n);
       if (e.key === "ArrowLeft" && n > 1) setIdx((i) => (i - 1 + n) % n);
     };
@@ -47,7 +54,12 @@ export default function ProductModal({ p, onClose }: { p: Product; onClose: () =
             <div>
               <div className="gallery-main">
                 {n ? (
-                  <img src={p.images[idx]} alt={`${p.name} foto ${idx + 1}`} />
+                  <img
+                    src={p.images[idx]}
+                    alt={`${p.name} foto ${idx + 1}`}
+                    onClick={() => setZoom(true)}
+                    style={{ cursor: "zoom-in" }}
+                  />
                 ) : (
                   <span style={{ fontSize: 96 }} aria-hidden>{CATEGORY_EMOJI[p.category]}</span>
                 )}
@@ -58,7 +70,10 @@ export default function ProductModal({ p, onClose }: { p: Product; onClose: () =
                     <span className="sticker right" style={{ top: "auto", bottom: 8 }}>{idx + 1}/{n}</span>
                   </>
                 )}
-                {sold && <div className="sold-over"><span>SOLD</span></div>}
+                {n > 0 && (
+                  <button className="btn sm white zoom-btn" onClick={() => setZoom(true)} aria-label="Lihat foto ukuran penuh">⤢ full</button>
+                )}
+                {sold && <div className="sold-over" style={{ pointerEvents: "none" }}><span>SOLD</span></div>}
               </div>
               {n > 1 && (
                 <div className="thumbs">
@@ -100,6 +115,19 @@ export default function ProductModal({ p, onClose }: { p: Product; onClose: () =
           </div>
         </Win>
       </div>
+      {zoom && n > 0 && (
+        <div className="lightbox" onClick={(e) => { e.stopPropagation(); setZoom(false); }}>
+          <img src={p.images[idx]} alt={`${p.name} foto ${idx + 1} ukuran penuh`} onClick={(e) => e.stopPropagation()} />
+          <button className="btn sm white lb-close" onClick={(e) => { e.stopPropagation(); setZoom(false); }} aria-label="Tutup">✕</button>
+          {n > 1 && (
+            <>
+              <button className="btn white lb-nav prev" onClick={(e) => { e.stopPropagation(); setIdx((idx - 1 + n) % n); }} aria-label="Foto sebelumnya">◀</button>
+              <button className="btn white lb-nav next" onClick={(e) => { e.stopPropagation(); setIdx((idx + 1) % n); }} aria-label="Foto berikutnya">▶</button>
+              <span className="lb-count pixel">{idx + 1}/{n}</span>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

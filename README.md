@@ -1,95 +1,76 @@
-# 🥑 Avobloom — toko preloved
+# 🥑 Avobloom
 
-Website jualan preloved (barang, skincare, pakaian) dengan:
+Website toko online untuk barang preloved (pakaian, skincare, dan barang lainnya), lengkap dengan halaman pembeli dan halaman admin. Dibangun sendiri dari desain sampai deploy.
 
-- **Halaman pembeli** — katalog + filter kategori, detail produk multi-foto, keranjang, checkout isi alamat, ongkir otomatis per provinsi, bayar QRIS, konfirmasi via WhatsApp, cek status pesanan pakai kode.
-- **Halaman admin** (`/admin`) — kelola produk (upload banyak foto), kelola pesanan (ubah status, isi resi, tombol WA ke pembeli), atur tarif ongkir per provinsi, ganti nomor WA & gambar QRIS.
+🔗 **Live demo:** [avobloom.vercel.app](https://avobloom.vercel.app/)
 
-Teknologi: Next.js + Supabase (database, login admin, penyimpanan foto) + Vercel. Sama kayak project Fontes.
+<!-- Tambahkan screenshot di sini, misalnya:
+![Beranda](docs/beranda.png)
+![Checkout](docs/checkout.png)
+![Admin](docs/admin.png)
+-->
 
----
+## Fitur
 
-## Cara pasang (±15 menit)
+**Halaman pembeli**
+- Katalog produk dengan filter kategori dan detail produk multi-foto
+- Keranjang belanja
+- Checkout dengan ongkir otomatis berdasarkan provinsi tujuan dan berat paket
+- Pembayaran QRIS dan konfirmasi pesanan via WhatsApp
+- Cek status pesanan menggunakan kode pesanan
+- Form ulasan dan testimoni pembeli
 
-### 1. Bikin project Supabase baru
-1. Buka [supabase.com](https://supabase.com) → **New project** (nama bebas, mis. `avobloom`). Simpan password database-nya.
-2. Tunggu sampai project siap.
+**Halaman admin** (`/admin`)
+- Login khusus admin
+- Kelola produk dan upload banyak foto
+- Kelola pesanan: ubah status, isi nomor resi, dan tombol WhatsApp siap pakai untuk menghubungi pembeli
+- Atur tarif ongkir per provinsi
+- Atur nomor WhatsApp toko dan gambar QRIS
+- Moderasi ulasan pembeli
 
-### 2. Jalankan schema database
-1. Buka file `supabase/schema.sql`, **ganti** `GANTI_DENGAN_EMAIL_ADMIN@gmail.com` dengan email yang mau kamu pakai buat login admin.
-2. Di Supabase: **SQL Editor → New query** → paste seluruh isi `schema.sql` → **Run**.
-   Ini bikin tabel produk, pesanan, ongkir (sudah terisi 38 provinsi contoh), pengaturan, dan tempat simpan foto.
+## Teknologi
 
-### 3. Bikin akun admin
-1. Supabase → **Authentication → Users → Add user → Create new user**.
-2. Isi email (yang sama dengan langkah 2) + password, centang **Auto Confirm User**.
-3. Supaya orang lain nggak bisa daftar: **Authentication → Sign In / Providers → Email** → matikan **Allow new users to sign up**.
+| Bagian | Teknologi |
+|---|---|
+| Front-end | Next.js 15 (App Router), React 19, TypeScript |
+| Back-end & database | Supabase (PostgreSQL, Auth, Storage, RPC function) |
+| Deployment | Vercel |
+| Desain | Figma |
 
-> Lupa ganti email di langkah 2? Jalankan di SQL Editor:
-> `insert into admins (email) values ('emailkamu@gmail.com');`
+## Keamanan
 
-### 4. Upload kode ke GitHub
-1. Bikin repo baru di GitHub (mis. `avobloom`).
-2. Klik **uploading an existing file**, drag **isi** folder ini (bukan folder luarnya). Folder `node_modules` dan `.next` jangan ikut (di zip memang sudah nggak ada).
-3. **Commit changes**.
+- **Harga, stok, dan ongkir dihitung ulang di database** melalui fungsi `create_order` saat checkout, sehingga tidak bisa dimanipulasi dari browser.
+- **Row Level Security (RLS)** di setiap tabel: data pesanan seperti alamat dan nomor HP pembeli hanya bisa dibaca admin, sedangkan pembeli hanya bisa melihat pesanannya sendiri lewat kode pesanan.
+- Stok otomatis berkurang saat pesanan dibuat dan kembali saat pesanan dibatalkan.
+- Kunci Supabase disimpan sebagai environment variable, tidak ditulis di kode.
 
-### 5. Deploy di Vercel
-1. [vercel.com](https://vercel.com) → **Add New → Project** → pilih repo `avobloom` → **Import**.
-2. Buka **Environment Variables**, tambahkan dua ini (ambil dari Supabase → **Project Settings → API**):
-   | Name | Value |
-   |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key |
-3. **Deploy**. Selesai! Web kamu ada di `avobloom.vercel.app` (atau nama lain yang dikasih Vercel).
+## Struktur Folder
 
-> Kalau env variable lupa diisi, web tetap jalan dalam **mode demo** (produk contoh). Isi env-nya lalu **Redeploy**.
-
-### 6. Atur toko dari admin
-Buka `/admin` → login, lalu:
-1. **⚙️ Pengaturan** → isi **nomor WhatsApp** kamu (wajib, pesanan dikirim ke sini). Ganti gambar QRIS kalau perlu.
-2. **🚚 Ongkir** → sesuaikan tarif per kg tiap provinsi (lihat di bawah).
-3. **🛍️ Produk** → tambah produk + foto.
-
----
-
-## Soal ongkir
-
-Ongkir dihitung otomatis: **tarif per kg provinsi tujuan × berat paket** (dibulatkan ke atas, minimal 1 kg) — sama seperti cara kurir menghitung.
-
-- Berat paket = jumlah **berat kirim** semua produk di keranjang, jadi isi berat tiap produk (termasuk kira-kira berat packing).
-- Tarif bawaan = **perkiraan J&T EZ dari Purwomartani, Sleman**. Cocokkan dulu: buka Cek Tarif di aplikasi/web J&T, asal **Kalasan, Sleman**, berat **1 kg**, tujuan ibu kota tiap provinsi, lalu ubah di tab Ongkir kalau beda. Ada tombol "naikkan/turunkan semua x%" biar cepat.
-- Sudah terlanjur menjalankan `schema.sql` versi lama? Jalankan `supabase/update-tarif-jnt.sql` di SQL Editor untuk ganti tarifnya ke versi J&T.
-- Teks "Dikirim via J&T…" yang tampil di checkout bisa diubah di admin → Pengaturan.
-- Karena tarifnya per provinsi, ongkir ke kota yang jauh di provinsi besar bisa sedikit beda dari aslinya — pakai tarif yang sedikit di atas rata-rata biar aman.
-
-## Alur pesanan
-
-1. Pembeli checkout → pesanan tersimpan dengan status **Menunggu pembayaran**, stok produk langsung berkurang (barang "dikunci").
-2. Pembeli scan QRIS, bayar sesuai total, klik **Konfirmasi via WhatsApp** → chat berisi detail pesanan + alamat otomatis terkirim ke WA kamu, pembeli lampirkan bukti bayar.
-3. Kamu cek mutasi, lalu di admin ubah status → **Sudah dibayar** → **Dikemas** → **Dikirim** (isi kurir + resi) → **Selesai**. Ada tombol WA siap pakai untuk kabari pembeli.
-4. Kalau pembeli nggak jadi bayar, ubah status ke **Dibatalkan** → stok otomatis balik.
-
-Pembeli bisa cek status kapan saja di menu **cek pesanan** pakai kodenya.
-
-## Keamanan singkat
-- Harga, stok, dan ongkir dihitung ulang di database saat checkout, jadi nggak bisa diakali dari browser.
-- Data pesanan (alamat & HP pembeli) hanya bisa dibaca admin; pembeli cuma bisa lihat pesanannya sendiri lewat kode.
-- Jangan pernah upload file `.env.local` ke GitHub.
-
-## Ganti tampilan
-- Logo: `public/logo.png` (dan ikon tab: `src/app/icon.png`).
-- QRIS bawaan: `public/qris.png` (bisa juga diganti dari admin).
-- Warna & gaya: `src/app/globals.css` (variabel warna di paling atas).
-- Teks beranda: `src/app/(shop)/Home.tsx`.
-
-## Jalankan di laptop (opsional)
-```bash
-npm install
-cp .env.example .env.local   # lalu isi
-npm run dev                  # buka http://localhost:3000
+```
+src/
+├── app/
+│   ├── (shop)/        # halaman pembeli: beranda, checkout, cek pesanan
+│   └── admin/         # halaman dan login admin
+├── components/        # komponen UI (keranjang, kartu produk, tab admin, dll.)
+└── lib/               # koneksi Supabase, API, keranjang, helper format
+supabase/
+└── schema.sql         # tabel, RLS policy, dan fungsi database
 ```
 
+## Menjalankan di Lokal
 
+Buat file `.env.local` di folder utama:
 
+```
+NEXT_PUBLIC_SUPABASE_URL=isi_project_url_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=isi_anon_key_supabase
+```
 
+Lalu jalankan:
 
+```bash
+npm install
+npm run dev    # buka http://localhost:3000
+```
+
+Database disiapkan dengan menjalankan `supabase/schema.sql` di SQL Editor Supabase.
